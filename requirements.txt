@@ -1,5 +1,16 @@
+# ── Existing training pipeline dependencies ────────────────────────────────────
 pandas
 matplotlib
 seaborn
 tensorflow
 scikit-learn
+
+# ── Live traffic testing pipeline (NEW) ───────────────────────────────────────
+# Packet capture (requires Npcap installed separately on Windows)
+scapy>=2.5.0
+
+# Scaler persistence
+joblib>=1.3.0
+
+# NumPy (already a transitive dep of TF/sklearn, but pinned for clarity)
+numpy>=1.24.0

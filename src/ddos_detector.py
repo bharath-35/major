@@ -24,8 +24,10 @@ from sklearn.metrics import roc_curve, auc
 # Set True to distribute data unevenly (DDoS-heavy / balanced / BENIGN-heavy)
 NON_IID = True
 
-# ── Output paths ─────────────────────────────────────────────────────────────
-OUT_DIR          = "../docs"
+# ── Project directories & Output paths ───────────────────────────────────────
+_SRC_DIR         = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_DIR     = os.path.dirname(_SRC_DIR)
+OUT_DIR          = os.path.join(_PROJECT_DIR, "docs")
 CONVERGENCE_PLOT = os.path.join(OUT_DIR, "convergence_plot.png")
 ROC_PLOT         = os.path.join(OUT_DIR, "roc_curve.png")
 MODEL_PATH       = os.path.join(OUT_DIR, "global_model.h5")
@@ -48,6 +50,17 @@ DDOS_LABEL = "DDoS"
 # ── Data Loading ──────────────────────────────────────────────────────────────
 def load_cicids2017(file_path):
     """Load CICIDS2017 CSV, strip whitespace from column names and labels."""
+    if not os.path.exists(file_path):
+        candidates = [
+            os.path.join(_PROJECT_DIR, file_path),
+            os.path.join(_PROJECT_DIR, "data", os.path.basename(file_path)),
+            os.path.join(_PROJECT_DIR, os.path.basename(file_path)),
+        ]
+        for cand in candidates:
+            if os.path.exists(cand):
+                file_path = cand
+                break
+
     print(f"[✓] Loading {file_path} ...")
     df = pd.read_csv(file_path, low_memory=False)
     df.columns = df.columns.str.strip()
@@ -116,7 +129,7 @@ def split_clients_non_iid(X, y, num_clients=3):
     if num_clients == 1:
         ddos_ratios = [0.5]
     else:
-        ddos_ratios = np.linspace(0.8, 0.2, num_clients).tolist()
+        ddos_ratios = np.linspace(0.9, 0.3, num_clients).tolist()
 
     clients = []
     ddos_ptr, benign_ptr = 0, 0
